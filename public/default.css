@@ -140,7 +140,7 @@ body.noscroll {
 }
 
 #browser #songList .song:last-child{
-  padding-bottom : 150px;
+  margin-bottom: 150px;
 }
 
 /* Style pour la playlist */
@@ -174,7 +174,7 @@ body.noscroll {
     margin-top: 0;
     background-color: #0a0a0a;
     overflow-y: auto;
-    padding-bottom: 150px; /* Ajoutez un padding en bas pour éviter que les éléments ne soient cachés */
+    padding-bottom: 270px; /* Ajoutez un padding en bas pour éviter que les éléments ne soient cachés */
 }
 
 #playlistContent .song {
