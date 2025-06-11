@@ -172,7 +172,7 @@ body.noscroll {
     margin-top: 0;
     background-color: #0a0a0a;
     overflow-y: auto;
-    padding-bottom: 300px; /* Ajoutez un padding en bas pour éviter que les éléments ne soient cachés */
+    padding-bottom: 150px; /* Ajoutez un padding en bas pour éviter que les éléments ne soient cachés */
 }
 
 #playlistContent .song {
@@ -415,14 +415,14 @@ body.noscroll {
 /* search bar*/ 
 
 .sort-select {
-  box-shadow: 0 0 7px #0ff; 
+  box-shadow: 0 0 10px #0ff; 
   padding: 10px;
   border-radius: 25px;
   font-family: 'Neon';
   font-size: 20px;
   background-color: #0a0a0a;
   color: #b7b7b7;
-  margin-right: 10px;
+  margin-right: 0;
   
 }
 
@@ -433,8 +433,8 @@ body.noscroll {
   color: black;
   padding: 10px;
   cursor: pointer;
-  margin-left: 10px;
-  box-shadow: 0 0 7px #0ff; 
+  margin-left: 0;
+  box-shadow: 0 0 10px #0ff; 
 }
 
 #search-container {
@@ -442,5 +442,5 @@ body.noscroll {
   align-items: center;
   justify-content: center;
   margin-top: 100px;
-  gap : 20px;
+  gap : 5px;
 }
