@@ -423,6 +423,13 @@ body.noscroll {
   background-color: #0a0a0a;
   color: #b7b7b7;
   margin-right: 0;
+  border: 0px;
+  transition: box-shadow 0.3s ease;
+
+}
+
+.sort-select:focus {
+  box-shadow: 0 0 15px rgba(138, 0, 255, 0.8);
   
 }
 
@@ -435,6 +442,12 @@ body.noscroll {
   cursor: pointer;
   margin-left: 0;
   box-shadow: 0 0 10px #0ff; 
+  transition: box-shadow 0.3s ease;
+
+}
+
+.sort-order-toggle:focus{
+  box-shadow: 0 0 15px rgba(138, 0, 255, 0.8);
 }
 
 #search-container {
