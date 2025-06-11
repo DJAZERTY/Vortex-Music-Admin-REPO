@@ -106,7 +106,7 @@ body.noscroll {
   display: flex; /* mieux que inline-block pour aligner l’image et les boutons */
   align-items: center;
   justify-content: space-between;
-  width: 95%;
+  width: 85%;
   height: 60px;
   margin: 25px auto;
   padding: 10px;
@@ -179,7 +179,7 @@ body.noscroll {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 95%;
+    width: 85%;
     height: 60px;
     margin: 25px auto;
     padding: 10px;
