@@ -229,7 +229,7 @@ function addToPlaylist(songTitle, songSrc) {
     <p>${songTitle}</p>
     <button onclick="moveUp(this)">⬆️</button>
     <button onclick="moveDown(this)">⬇️</button>
-    <button onclick="removeFromPlaylist(this)">Retirer</button>
+    <button id="rm_song" onclick="removeFromPlaylist(this)">Retirer</button>
   `;
 
   playlistContent.appendChild(songDiv);
@@ -334,7 +334,7 @@ function loadPlaylist() {
         <p>${song.title}</p>
         <button onclick="moveUp(this)">⬆️</button>
         <button onclick="moveDown(this)">⬇️</button>
-        <button onclick="removeFromPlaylist(this)">Retirer</button>
+        <button id="rm_song" onclick="removeFromPlaylist(this)">Retirer</button>
       `;
 
       playlistContent.appendChild(songDiv);

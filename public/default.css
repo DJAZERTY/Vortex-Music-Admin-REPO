@@ -193,18 +193,18 @@ body.noscroll {
 }
 
 #playlistContent .song {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 85%;
-    height: 60px;
-    margin: 25px auto;
-    padding: 10px;
-    background: linear-gradient(135deg, #4f00ff, #8a00ff);
-    box-shadow: 0 0 20px #8a00ff;
-    border-radius: 8px;
-    color: white;
-    gap: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 85%;
+  height: 60px;
+  margin: 10px auto;
+  padding: 10px;
+  background: linear-gradient(135deg, #4f00ff, #8a00ff);
+  box-shadow: 0 0 20px #8a00ff;
+  border-radius: 8px;
+  color: white;
+  margin-bottom:25px;
 }
 
 #playlistContent .song:active {
@@ -212,12 +212,11 @@ body.noscroll {
 }
 
 #playlistContent .song p {
-    margin-left: 10px;
-    font-family: "Neon";
-    font-size:30px;
-    color: #0ff;
-    padding-left: 10px;
-    align-self:center;
+  margin: 0;
+  font-family: "Neon";
+  font-size: 30px;
+  color: #0ff;
+  flex-grow: 1;
 }
 
 #playerTitle {
@@ -229,7 +228,7 @@ body.noscroll {
     align-self:center;
 }
 
-#playlistContent .song button {
+#playlistContent .song #rm_song {
     background: red;
     border: none;
     padding: 8px 15px;
@@ -242,6 +241,11 @@ body.noscroll {
     right: 20px;
     bottom: 15px;
     margin-right: 20px;
+}
+
+#playlistContent .song #rm_song:hover {
+  background : #fff;
+  color: red;
 }
 
 #playlistContent .song button {
