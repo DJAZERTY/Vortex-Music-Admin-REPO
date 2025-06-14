@@ -246,6 +246,7 @@ body.noscroll {
 #playlistContent .song #rm_song:hover {
   background : #fff;
   color: red;
+  border : 2px solid red;
 }
 
 #playlistContent .song button {
@@ -259,6 +260,7 @@ body.noscroll {
 
 #playlistContent .song button:hover {
   background: #8a00ff;
+  border: 2px solid #0ff;
 }
 
 
