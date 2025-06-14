@@ -190,6 +190,12 @@ body.noscroll {
     overflow-y: auto;
     padding-bottom: 270px; /* Ajoutez un padding en bas pour éviter que les éléments ne soient cachés */
     margin-left:-5px;
+    -ms-overflow-style: none;  /* IE et Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+#playlistContent::-webkit-scrollbar {
+  display: none;
 }
 
 #playlistContent .song {
@@ -217,6 +223,10 @@ body.noscroll {
   font-size: 30px;
   color: #0ff;
   flex-grow: 1;
+}
+
+#playlistContent .song:last-child {
+  margin-bottom: 100px;
 }
 
 #playerTitle {
