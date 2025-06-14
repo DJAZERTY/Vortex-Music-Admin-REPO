@@ -192,25 +192,50 @@ document.addEventListener("DOMContentLoaded", function () {
   loadPlaylist();
 });
 
+function moveUp(button) {
+  let songDiv = button.parentElement;
+  let previousSongDiv = songDiv.previousElementSibling;
+
+  if (previousSongDiv) {
+    songDiv.parentNode.insertBefore(songDiv, previousSongDiv);
+    savePlaylist();
+  }
+}
+
+function moveDown(button) {
+  let songDiv = button.parentElement;
+  let nextSongDiv = songDiv.nextElementSibling;
+
+  if (nextSongDiv) {
+    songDiv.parentNode.insertBefore(nextSongDiv, songDiv);
+    savePlaylist();
+  }
+}
+
+
+
 function addToPlaylist(songTitle, songSrc) {
   let playlistContent = document.getElementById("playlistContent");
 
+  // Vérifiez si la chanson est déjà dans la playlist
   if ([...playlistContent.children].some(song => song.getAttribute("data-src") === songSrc)) {
     return;
   }
 
   let songDiv = document.createElement("div");
   songDiv.classList.add("song");
-  songDiv.setAttribute("draggable", "true");
   songDiv.setAttribute("data-src", songSrc);
-  songDiv.innerHTML = `<p>${songTitle}</p>
-                       <button onclick="removeFromPlaylist(this)">Retirer</button>`;
-
-  addDragAndDropEvents(songDiv);
+  songDiv.innerHTML = `
+    <p>${songTitle}</p>
+    <button onclick="moveUp(this)">⬆️</button>
+    <button onclick="moveDown(this)">⬇️</button>
+    <button onclick="removeFromPlaylist(this)">Retirer</button>
+  `;
 
   playlistContent.appendChild(songDiv);
   savePlaylist();
 }
+
 
 function addDragAndDropEvents(songDiv) {
   songDiv.addEventListener('dragstart', dragStart);
@@ -304,18 +329,20 @@ function loadPlaylist() {
     JSON.parse(storedPlaylist).forEach(song => {
       let songDiv = document.createElement("div");
       songDiv.classList.add("song");
-      songDiv.setAttribute("draggable", "true");
       songDiv.setAttribute("data-src", song.src);
-      songDiv.innerHTML = `<p>${song.title}</p>
-                           <button onclick="removeFromPlaylist(this)">Retirer</button>`;
-
-      addDragAndDropEvents(songDiv);
+      songDiv.innerHTML = `
+        <p>${song.title}</p>
+        <button onclick="moveUp(this)">⬆️</button>
+        <button onclick="moveDown(this)">⬇️</button>
+        <button onclick="removeFromPlaylist(this)">Retirer</button>
+      `;
 
       playlistContent.appendChild(songDiv);
     });
   }
   checkAndResetPlayer();
 }
+
 
 // Gestion du lecteur audio
 let audioElement = document.getElementById("audioElement");

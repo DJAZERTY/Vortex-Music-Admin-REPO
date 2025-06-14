@@ -244,6 +244,19 @@ body.noscroll {
     margin-right: 20px;
 }
 
+#playlistContent .song button {
+  background: #0ff;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+#playlistContent .song button:hover {
+  background: #8a00ff;
+}
+
 
 .playlist-container .playlist-content .song button:hover {
     background: darkred;
