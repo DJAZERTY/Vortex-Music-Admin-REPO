@@ -16,6 +16,7 @@ async function loadCSVData() {
   }
 }
 
+
 function showCustomAlert(message) {
   const customAlert = document.getElementById('customAlert');
   const customAlertMessage = document.getElementById('customAlertMessage');
@@ -53,7 +54,7 @@ function displaySongs(data) {
     playButton.textContent = '➕';
     playButton.addEventListener('click', () => {
       addToPlaylist(song.Title, song.Mp3);
-      showCustomAlert(`"${song.Title}" ajoute a la playlist 🎵`);
+      showCustomAlert(`"${song.Title}" ajouté à la playlist 🎵`);
     });
 
     const clipButton = document.createElement('button');
@@ -64,7 +65,7 @@ function displaySongs(data) {
 
     const title = document.createElement('p');
     title.textContent = song.Title;
-    title.classList.add('song-title');
+    title.classList.add('song-title', 'scrolling-text'); // Ajoutez la classe scrolling-text à tous les titres
 
     buttonsDiv.appendChild(playButton);
     buttonsDiv.appendChild(clipButton);
@@ -217,7 +218,6 @@ function moveDown(button) {
 function addToPlaylist(songTitle, songSrc) {
   let playlistContent = document.getElementById("playlistContent");
 
-  // Vérifiez si la chanson est déjà dans la playlist
   if ([...playlistContent.children].some(song => song.getAttribute("data-src") === songSrc)) {
     return;
   }
@@ -225,14 +225,38 @@ function addToPlaylist(songTitle, songSrc) {
   let songDiv = document.createElement("div");
   songDiv.classList.add("song");
   songDiv.setAttribute("data-src", songSrc);
-  songDiv.innerHTML = `
-    <p>${songTitle}</p>
-    <button onclick="moveUp(this)">⬆️</button>
-    <button onclick="moveDown(this)">⬇️</button>
-    <button id="rm_song" onclick="removeFromPlaylist(this)">Retirer</button>
-  `;
+
+  let title = document.createElement("p");
+  title.textContent = songTitle;
+  title.classList.add("song-title");
+
+  let buttonsContainer = document.createElement("div");
+  buttonsContainer.classList.add("buttons-container");
+
+  let moveUpButton = document.createElement("button");
+  moveUpButton.textContent = "⬆️";
+  moveUpButton.onclick = function() { moveUp(this); };
+
+  let moveDownButton = document.createElement("button");
+  moveDownButton.textContent = "⬇️";
+  moveDownButton.onclick = function() { moveDown(this); };
+
+  let removeButton = document.createElement("button");
+  removeButton.textContent = "Retirer";
+  removeButton.onclick = function() { removeFromPlaylist(this); };
+
+  buttonsContainer.appendChild(moveUpButton);
+  buttonsContainer.appendChild(moveDownButton);
+  buttonsContainer.appendChild(removeButton);
+
+  songDiv.appendChild(title);
+  songDiv.appendChild(buttonsContainer);
 
   playlistContent.appendChild(songDiv);
+
+  // Vérifiez si le texte dépasse
+  checkTextOverflow(title);
+
   savePlaylist();
 }
 

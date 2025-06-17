@@ -512,31 +512,33 @@ body::-webkit-scrollbar {
 
 /* _________________ scrolling _____________________*/
 
-/* Assurez-vous que le texte reste sur une seule ligne et utilisez le défilement horizontal si nécessaire */
+/* Classe pour le texte qui doit défiler */
+.scrolling-text {
+  white-space: nowrap; /* Empêche le texte de revenir à la ligne */
+  overflow: hidden; /* Cache le texte qui dépasse */
+  display: inline-block; /* Assure que le texte reste en ligne */
+  width: 100%; /* Assure que le texte prend toute la largeur disponible */
+  animation: scrollText 10s linear infinite; /* Animation pour faire défiler le texte */
+}
+
+/* Animation pour le défilement du texte */
+@keyframes scrollText {
+  0% {
+    transform: translateX(100%); /* Commence à droite */
+  }
+  100% {
+    transform: translateX(-100%); /* Défile le texte de la largeur du conteneur */
+  }
+}
+
+/* Appliquez cette classe à tous les titres dans la playlist et le navigateur */
 #playlistContent .song p,
 #browser #songList .song p {
-  white-space: nowrap; /* Empêche le texte de revenir à la ligne */
-  overflow-x: auto; /* Active le défilement horizontal si le texte dépasse */
   font-family: "Neon";
   font-size: 30px;
   color: #0ff;
   margin: 0;
   flex-grow: 1;
-}
-
-/* Assurez-vous que le conteneur parent permet le défilement */
-#playlistContent .song,
-#browser #songList .song {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 85%;
-  height: 60px;
-  margin: 10px auto;
-  padding: 10px;
-  background: linear-gradient(135deg, #4f00ff, #8a00ff);
-  box-shadow: 0 0 20px #8a00ff;
-  border-radius: 8px;
-  color: white;
-  overflow: hidden; /* Cache tout ce qui dépasse du conteneur */
+  white-space: nowrap; /* Empêche le texte de revenir à la ligne */
+  overflow: hidden; /* Cache le texte qui dépasse */
 }
