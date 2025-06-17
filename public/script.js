@@ -16,12 +16,75 @@ async function loadCSVData() {
   }
 }
 
-
 function showCustomAlert(message) {
   const customAlert = document.getElementById('customAlert');
   const customAlertMessage = document.getElementById('customAlertMessage');
   customAlertMessage.textContent = message;
   customAlert.style.display = 'flex';
+}
+
+function createSongElement(songTitle, songSrc, isPlaylist = false) {
+  const songDiv = document.createElement('div');
+  songDiv.classList.add('song');
+  if (isPlaylist) {
+    songDiv.setAttribute('data-src', songSrc);
+  }
+
+  const scrollingTextContainer = document.createElement('div');
+  scrollingTextContainer.classList.add('scrolling-text-container');
+
+  const title = document.createElement('p');
+  title.textContent = songTitle;
+  title.classList.add('scrolling-text');
+
+  scrollingTextContainer.appendChild(title);
+  songDiv.appendChild(scrollingTextContainer);
+
+  if (isPlaylist) {
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.classList.add('buttons-container');
+
+    const moveUpButton = document.createElement('button');
+    moveUpButton.textContent = '⬆️';
+    moveUpButton.onclick = function() { moveUp(this); };
+
+    const moveDownButton = document.createElement('button');
+    moveDownButton.textContent = '⬇️';
+    moveDownButton.onclick = function() { moveDown(this); };
+
+    const removeButton = document.createElement('button');
+    removeButton.textContent = 'Retirer';
+    removeButton.onclick = function() { removeFromPlaylist(this); };
+
+    buttonsContainer.appendChild(moveUpButton);
+    buttonsContainer.appendChild(moveDownButton);
+    buttonsContainer.appendChild(removeButton);
+
+    songDiv.appendChild(buttonsContainer);
+  } else {
+    const buttonsDiv = document.createElement('div');
+    buttonsDiv.classList.add('buttons-div');
+
+    const playButton = document.createElement('button');
+    playButton.textContent = '➕';
+    playButton.addEventListener('click', () => {
+      addToPlaylist(songTitle, songSrc);
+      showCustomAlert(`"${songTitle}" ajouté à la playlist 🎵`);
+    });
+
+    const clipButton = document.createElement('button');
+    clipButton.textContent = '🎬';
+    clipButton.addEventListener('click', () => {
+      window.open(songSrc, '_blank');
+    });
+
+    buttonsDiv.appendChild(playButton);
+    buttonsDiv.appendChild(clipButton);
+
+    songDiv.appendChild(buttonsDiv);
+  }
+
+  return songDiv;
 }
 
 function displaySongs(data) {
@@ -39,47 +102,8 @@ function displaySongs(data) {
   }
 
   data.forEach(song => {
-    const songDiv = document.createElement('div');
-    songDiv.classList.add('song');
-
-    const img = document.createElement('img');
-    img.src = song.Png || 'https://cdn.glitch.global/05de98a1-79c1-4327-a9f1-7d0c6536ee65/logo.png?v=1747693747727';
-    img.alt = song.Title || 'Artwork';
-    img.classList.add('song-image');
-
-    const buttonsDiv = document.createElement('div');
-    buttonsDiv.classList.add('buttons-div');
-
-    const playButton = document.createElement('button');
-    playButton.textContent = '➕';
-    playButton.addEventListener('click', () => {
-      addToPlaylist(song.Title, song.Mp3);
-      showCustomAlert(`"${song.Title}" ajouté à la playlist 🎵`);
-    });
-
-    const clipButton = document.createElement('button');
-    clipButton.textContent = '🎬';
-    clipButton.addEventListener('click', () => {
-      window.open(song.Mp4, '_blank');
-    });
-
-    const scrollingTextContainer = document.createElement('div');
-    scrollingTextContainer.classList.add('scrolling-text-container');
-
-    const title = document.createElement('p');
-    title.textContent = song.Title;
-    title.classList.add('scrolling-text');
-
-    scrollingTextContainer.appendChild(title);
-
-    buttonsDiv.appendChild(playButton);
-    buttonsDiv.appendChild(clipButton);
-
-    songDiv.appendChild(img);
-    songDiv.appendChild(scrollingTextContainer);
-    songDiv.appendChild(buttonsDiv);
-
-    songList.appendChild(songDiv);
+    const songElement = createSongElement(song.Title, song.Mp3);
+    songList.appendChild(songElement);
   });
 }
 
@@ -199,8 +223,8 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function moveUp(button) {
-  let songDiv = button.parentElement;
-  let previousSongDiv = songDiv.previousElementSibling;
+  const songDiv = button.closest('.song');
+  const previousSongDiv = songDiv.previousElementSibling;
 
   if (previousSongDiv) {
     songDiv.parentNode.insertBefore(songDiv, previousSongDiv);
@@ -209,8 +233,8 @@ function moveUp(button) {
 }
 
 function moveDown(button) {
-  let songDiv = button.parentElement;
-  let nextSongDiv = songDiv.nextElementSibling;
+  const songDiv = button.closest('.song');
+  const nextSongDiv = songDiv.nextElementSibling;
 
   if (nextSongDiv) {
     songDiv.parentNode.insertBefore(nextSongDiv, songDiv);
@@ -219,106 +243,49 @@ function moveDown(button) {
 }
 
 function addToPlaylist(songTitle, songSrc) {
-  let playlistContent = document.getElementById("playlistContent");
-
+  const playlistContent = document.getElementById("playlistContent");
   if ([...playlistContent.children].some(song => song.getAttribute("data-src") === songSrc)) {
     return;
   }
 
-  let songDiv = document.createElement("div");
-  songDiv.classList.add("song");
-  songDiv.setAttribute("data-src", songSrc);
-
-  const scrollingTextContainer = document.createElement('div');
-  scrollingTextContainer.classList.add('scrolling-text-container');
-
-  let title = document.createElement("p");
-  title.textContent = songTitle;
-  title.classList.add("scrolling-text");
-
-  scrollingTextContainer.appendChild(title);
-
-  let buttonsContainer = document.createElement("div");
-  buttonsContainer.classList.add("buttons-container");
-
-  let moveUpButton = document.createElement("button");
-  moveUpButton.textContent = "⬆️";
-  moveUpButton.onclick = function() { moveUp(this); };
-
-  let moveDownButton = document.createElement("button");
-  moveDownButton.textContent = "⬇️";
-  moveDownButton.onclick = function() { moveDown(this); };
-
-  let removeButton = document.createElement("button");
-  removeButton.textContent = "Retirer";
-  removeButton.onclick = function() { removeFromPlaylist(this); };
-
-  buttonsContainer.appendChild(moveUpButton);
-  buttonsContainer.appendChild(moveDownButton);
-  buttonsContainer.appendChild(removeButton);
-
-  songDiv.appendChild(scrollingTextContainer);
-  songDiv.appendChild(buttonsContainer);
-
-  playlistContent.appendChild(songDiv);
+  const songElement = createSongElement(songTitle, songSrc, true);
+  playlistContent.appendChild(songElement);
   savePlaylist();
 }
 
-
-function addDragAndDropEvents(songDiv) {
-  songDiv.addEventListener('dragstart', dragStart);
-  songDiv.addEventListener('dragover', dragOver);
-  songDiv.addEventListener('drop', drop);
-  songDiv.addEventListener('dragenter', dragEnter);
-  songDiv.addEventListener('dragleave', dragLeave);
+function removeFromPlaylist(button) {
+  const songDiv = button.closest('.song');
+  songDiv.remove();
+  savePlaylist();
+  checkAndResetPlayer();
 }
 
-let dragSrcEl = null;
+function savePlaylist() {
+  const songs = [...document.querySelectorAll("#playlistContent .song")].map(song => ({
+    title: song.querySelector("p").textContent,
+    src: song.getAttribute("data-src")
+  }));
 
-function dragStart(e) {
-  dragSrcEl = this;
-  e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/plain', null);
-  this.style.opacity = "0.5";
+  localStorage.setItem("playlist", JSON.stringify(songs));
+  checkAndResetPlayer();
 }
 
-function dragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-}
+function loadPlaylist() {
+  const storedPlaylist = localStorage.getItem("playlist");
+  const playlistContent = document.getElementById("playlistContent");
 
-function drop(e) {
-  e.preventDefault();
-  if (dragSrcEl !== this) {
-    let playlistContent = document.getElementById("playlistContent");
-    let children = [...playlistContent.children];
-    let srcIndex = children.indexOf(dragSrcEl);
-    let targetIndex = children.indexOf(this);
-
-    if (srcIndex < targetIndex) {
-      if (this.nextSibling) {
-        playlistContent.insertBefore(dragSrcEl, this.nextSibling);
-      } else {
-        playlistContent.appendChild(dragSrcEl);
-      }
-    } else {
-      playlistContent.insertBefore(dragSrcEl, this);
-    }
-    dragSrcEl.style.opacity = "1";
-    savePlaylist();
+  if (storedPlaylist) {
+    playlistContent.innerHTML = "";
+    JSON.parse(storedPlaylist).forEach(song => {
+      const songElement = createSongElement(song.title, song.src, true);
+      playlistContent.appendChild(songElement);
+    });
   }
-}
-
-function dragEnter(e) {
-  this.style.backgroundColor = '#444';
-}
-
-function dragLeave(e) {
-  this.style.backgroundColor = '';
+  checkAndResetPlayer();
 }
 
 function checkAndResetPlayer() {
-  let playlistContent = document.getElementById("playlistContent");
+  const playlistContent = document.getElementById("playlistContent");
   if (playlistContent.children.length === 0) {
     resetPlayer();
   }
@@ -332,45 +299,6 @@ function resetPlayer() {
   audioElement.currentTime = 0;
   document.getElementById("progressBar").style.width = "0%";
 }
-
-function removeFromPlaylist(button) {
-  button.parentElement.remove();
-  savePlaylist();
-  checkAndResetPlayer();
-}
-
-function savePlaylist() {
-  let songs = [...document.querySelectorAll("#playlistContent .song")].map(song => ({
-    title: song.querySelector("p").textContent,
-    src: song.getAttribute("data-src")
-  }));
-
-  localStorage.setItem("playlist", JSON.stringify(songs));
-  checkAndResetPlayer();
-}
-
-function loadPlaylist() {
-  let storedPlaylist = localStorage.getItem("playlist");
-  if (storedPlaylist) {
-    let playlistContent = document.getElementById("playlistContent");
-    playlistContent.innerHTML = "";
-    JSON.parse(storedPlaylist).forEach(song => {
-      let songDiv = document.createElement("div");
-      songDiv.classList.add("song");
-      songDiv.setAttribute("data-src", song.src);
-      songDiv.innerHTML = `
-        <p>${song.title}</p>
-        <button onclick="moveUp(this)">⬆️</button>
-        <button onclick="moveDown(this)">⬇️</button>
-        <button id="rm_song" onclick="removeFromPlaylist(this)">Retirer</button>
-      `;
-
-      playlistContent.appendChild(songDiv);
-    });
-  }
-  checkAndResetPlayer();
-}
-
 
 // Gestion du lecteur audio
 let audioElement = document.getElementById("audioElement");
