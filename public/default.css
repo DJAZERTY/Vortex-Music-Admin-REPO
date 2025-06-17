@@ -238,7 +238,7 @@ body.noscroll {
     align-self:center;
 }
 
-#playlistContent .song #rm_song {
+#playlistContent .song .rm_song {
     background: red;
     border: none;
     padding: 8px 15px;
@@ -253,7 +253,7 @@ body.noscroll {
     margin-right: 20px;
 }
 
-#playlistContent .song #rm_song:hover {
+#playlistContent .song .rm_song:hover {
   background : #fff;
   color: red;
   border : 2px solid red;
@@ -515,35 +515,43 @@ body::-webkit-scrollbar {
 /* Conteneur pour le texte qui doit défiler */
 .scrolling-text-container {
   width: 100%;
-  overflow: hidden; /* Cache le texte qui dépasse */
+  overflow: hidden;
   display: flex;
   align-items: center;
 }
 
 /* Classe pour le texte qui doit défiler */
 .scrolling-text {
-  white-space: nowrap; /* Empêche le texte de revenir à la ligne */
+  white-space: nowrap;
   display: inline-block;
-  padding-left: 100%; /* Commence le texte hors de la vue à droite */
-  animation: scrollText 10s linear infinite; /* Animation pour faire défiler le texte */
+  animation: scrollText 10s linear infinite;
 }
 
 /* Animation pour le défilement du texte */
 @keyframes scrollText {
   0% {
-    transform: translateX(0);
+    transform: translateX(100%);
   }
   100% {
-    transform: translateX(-100%); /* Défile le texte de la largeur du conteneur */
+    transform: translateX(-100%);
   }
 }
 
-/* Appliquez cette classe à tous les titres dans la playlist et le navigateur */
-#playlistContent .song .scrolling-text-container,
-#browser #songList .song .scrolling-text-container {
-  width: 100%;
+/* Style pour les boutons dans la playlist */
+.buttons-container {
+  display: flex;
+  gap: 5px;
+  margin-left: auto; /* Aligne les boutons à droite */
 }
 
+/* Style pour les images dans le navigateur */
+.song-image {
+  max-width: 80px;
+  max-height: 45px;
+  border-radius: 4px;
+}
+
+/* Assurez-vous que le texte reste sur une seule ligne et utilisez le défilement horizontal si nécessaire */
 #playlistContent .song p,
 #browser #songList .song p {
   font-family: "Neon";
@@ -552,3 +560,4 @@ body::-webkit-scrollbar {
   margin: 0;
   flex-grow: 1;
 }
+

@@ -23,26 +23,33 @@ function showCustomAlert(message) {
   customAlert.style.display = 'flex';
 }
 
-function createSongElement(songTitle, songSrc, isPlaylist = false) {
+function createSongElement(song, isPlaylist = false) {
   const songDiv = document.createElement('div');
   songDiv.classList.add('song');
-  if (isPlaylist) {
-    songDiv.setAttribute('data-src', songSrc);
+
+  if (!isPlaylist) {
+    const img = document.createElement('img');
+    img.src = song.Png || 'https://cdn.glitch.global/05de98a1-79c1-4327-a9f1-7d0c6536ee65/logo.png?v=1747693747727';
+    img.alt = song.Title || 'Artwork';
+    img.classList.add('song-image');
+    songDiv.appendChild(img);
   }
 
   const scrollingTextContainer = document.createElement('div');
   scrollingTextContainer.classList.add('scrolling-text-container');
 
   const title = document.createElement('p');
-  title.textContent = songTitle;
+  title.textContent = song.Title;
   title.classList.add('scrolling-text');
 
   scrollingTextContainer.appendChild(title);
   songDiv.appendChild(scrollingTextContainer);
 
+  const buttonsContainer = document.createElement('div');
+  buttonsContainer.classList.add('buttons-container');
+
   if (isPlaylist) {
-    const buttonsContainer = document.createElement('div');
-    buttonsContainer.classList.add('buttons-container');
+    songDiv.setAttribute('data-src', song.Mp3);
 
     const moveUpButton = document.createElement('button');
     moveUpButton.textContent = '⬆️';
@@ -54,36 +61,33 @@ function createSongElement(songTitle, songSrc, isPlaylist = false) {
 
     const removeButton = document.createElement('button');
     removeButton.textContent = 'Retirer';
-    removeButton.onclick = function() { removeFromPlaylist(this); };
+    removeButton.classList.add('rm_song')
+    removeButton.onclick = function() { rem
+    oveFromPlaylist(this); };
 
     buttonsContainer.appendChild(moveUpButton);
     buttonsContainer.appendChild(moveDownButton);
     buttonsContainer.appendChild(removeButton);
-
-    songDiv.appendChild(buttonsContainer);
   } else {
-    const buttonsDiv = document.createElement('div');
-    buttonsDiv.classList.add('buttons-div');
-
     const playButton = document.createElement('button');
     playButton.textContent = '➕';
+    playButton.  
     playButton.addEventListener('click', () => {
-      addToPlaylist(songTitle, songSrc);
-      showCustomAlert(`"${songTitle}" ajouté à la playlist 🎵`);
+      addToPlaylist(song.Title, song.Mp3);
+      showCustomAlert(`"${song.Title}" ajouté à la playlist 🎵`);
     });
 
     const clipButton = document.createElement('button');
     clipButton.textContent = '🎬';
     clipButton.addEventListener('click', () => {
-      window.open(songSrc, '_blank');
+      window.open(song.Mp4, '_blank');
     });
 
-    buttonsDiv.appendChild(playButton);
-    buttonsDiv.appendChild(clipButton);
-
-    songDiv.appendChild(buttonsDiv);
+    buttonsContainer.appendChild(playButton);
+    buttonsContainer.appendChild(clipButton);
   }
 
+  songDiv.appendChild(buttonsContainer);
   return songDiv;
 }
 
@@ -102,7 +106,7 @@ function displaySongs(data) {
   }
 
   data.forEach(song => {
-    const songElement = createSongElement(song.Title, song.Mp3);
+    const songElement = createSongElement(song);
     songList.appendChild(songElement);
   });
 }
@@ -248,7 +252,8 @@ function addToPlaylist(songTitle, songSrc) {
     return;
   }
 
-  const songElement = createSongElement(songTitle, songSrc, true);
+  const song = { Title: songTitle, Mp3: songSrc };
+  const songElement = createSongElement(song, true);
   playlistContent.appendChild(songElement);
   savePlaylist();
 }
@@ -277,7 +282,8 @@ function loadPlaylist() {
   if (storedPlaylist) {
     playlistContent.innerHTML = "";
     JSON.parse(storedPlaylist).forEach(song => {
-      const songElement = createSongElement(song.title, song.src, true);
+      const songObj = { Title: song.title, Mp3: song.src };
+      const songElement = createSongElement(songObj, true);
       playlistContent.appendChild(songElement);
     });
   }
