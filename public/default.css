@@ -131,13 +131,13 @@ body.noscroll {
   font-size: 30px;
 }
 
-#browser #songList .song .buttons-div{
+#browser_button{
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-#browser #songList .song .buttons-div button, .sim_music{
+#browser_button, .sim_music{
     background-color: #0ff;
     border-radius: 15px;
 }

@@ -62,8 +62,7 @@ function createSongElement(song, isPlaylist = false) {
     const removeButton = document.createElement('button');
     removeButton.textContent = 'Retirer';
     removeButton.classList.add('rm_song')
-    removeButton.onclick = function() { rem
-    oveFromPlaylist(this); };
+    removeButton.onclick = function() { removeFromPlaylist(this); };
 
     buttonsContainer.appendChild(moveUpButton);
     buttonsContainer.appendChild(moveDownButton);
@@ -71,14 +70,15 @@ function createSongElement(song, isPlaylist = false) {
   } else {
     const playButton = document.createElement('button');
     playButton.textContent = '➕';
-    playButton.  
+    playButton.id = 'browser_button'
     playButton.addEventListener('click', () => {
       addToPlaylist(song.Title, song.Mp3);
-      showCustomAlert(`"${song.Title}" ajouté à la playlist 🎵`);
+      showCustomAlert(`"${song.Title}" ajoute a la playlist 🎵`);
     });
 
     const clipButton = document.createElement('button');
     clipButton.textContent = '🎬';
+    clipButton.id = 'browser_button'
     clipButton.addEventListener('click', () => {
       window.open(song.Mp4, '_blank');
     });
