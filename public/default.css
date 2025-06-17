@@ -509,3 +509,34 @@ body::-webkit-scrollbar {
   gap : 5px;
   margin-bottom: 20px;
 }
+
+/* _________________ scrolling _____________________*/
+
+/* Assurez-vous que le texte reste sur une seule ligne et utilisez le défilement horizontal si nécessaire */
+#playlistContent .song p,
+#browser #songList .song p {
+  white-space: nowrap; /* Empêche le texte de revenir à la ligne */
+  overflow-x: auto; /* Active le défilement horizontal si le texte dépasse */
+  font-family: "Neon";
+  font-size: 30px;
+  color: #0ff;
+  margin: 0;
+  flex-grow: 1;
+}
+
+/* Assurez-vous que le conteneur parent permet le défilement */
+#playlistContent .song,
+#browser #songList .song {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 85%;
+  height: 60px;
+  margin: 10px auto;
+  padding: 10px;
+  background: linear-gradient(135deg, #4f00ff, #8a00ff);
+  box-shadow: 0 0 20px #8a00ff;
+  border-radius: 8px;
+  color: white;
+  overflow: hidden; /* Cache tout ce qui dépasse du conteneur */
+}
