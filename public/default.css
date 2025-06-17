@@ -512,19 +512,26 @@ body::-webkit-scrollbar {
 
 /* _________________ scrolling _____________________*/
 
+/* Conteneur pour le texte qui doit défiler */
+.scrolling-text-container {
+  width: 100%;
+  overflow: hidden; /* Cache le texte qui dépasse */
+  display: flex;
+  align-items: center;
+}
+
 /* Classe pour le texte qui doit défiler */
 .scrolling-text {
   white-space: nowrap; /* Empêche le texte de revenir à la ligne */
-  overflow: hidden; /* Cache le texte qui dépasse */
-  display: inline-block; /* Assure que le texte reste en ligne */
-  width: 100%; /* Assure que le texte prend toute la largeur disponible */
+  display: inline-block;
+  padding-left: 100%; /* Commence le texte hors de la vue à droite */
   animation: scrollText 10s linear infinite; /* Animation pour faire défiler le texte */
 }
 
 /* Animation pour le défilement du texte */
 @keyframes scrollText {
   0% {
-    transform: translateX(100%); /* Commence à droite */
+    transform: translateX(0);
   }
   100% {
     transform: translateX(-100%); /* Défile le texte de la largeur du conteneur */
@@ -532,6 +539,11 @@ body::-webkit-scrollbar {
 }
 
 /* Appliquez cette classe à tous les titres dans la playlist et le navigateur */
+#playlistContent .song .scrolling-text-container,
+#browser #songList .song .scrolling-text-container {
+  width: 100%;
+}
+
 #playlistContent .song p,
 #browser #songList .song p {
   font-family: "Neon";
@@ -539,6 +551,4 @@ body::-webkit-scrollbar {
   color: #0ff;
   margin: 0;
   flex-grow: 1;
-  white-space: nowrap; /* Empêche le texte de revenir à la ligne */
-  overflow: hidden; /* Cache le texte qui dépasse */
 }

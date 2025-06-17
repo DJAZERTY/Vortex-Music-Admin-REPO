@@ -63,15 +63,20 @@ function displaySongs(data) {
       window.open(song.Mp4, '_blank');
     });
 
+    const scrollingTextContainer = document.createElement('div');
+    scrollingTextContainer.classList.add('scrolling-text-container');
+
     const title = document.createElement('p');
     title.textContent = song.Title;
-    title.classList.add('song-title', 'scrolling-text'); // Ajoutez la classe scrolling-text à tous les titres
+    title.classList.add('scrolling-text');
+
+    scrollingTextContainer.appendChild(title);
 
     buttonsDiv.appendChild(playButton);
     buttonsDiv.appendChild(clipButton);
 
     songDiv.appendChild(img);
-    songDiv.appendChild(title);
+    songDiv.appendChild(scrollingTextContainer);
     songDiv.appendChild(buttonsDiv);
 
     songList.appendChild(songDiv);
@@ -213,8 +218,6 @@ function moveDown(button) {
   }
 }
 
-
-
 function addToPlaylist(songTitle, songSrc) {
   let playlistContent = document.getElementById("playlistContent");
 
@@ -226,9 +229,14 @@ function addToPlaylist(songTitle, songSrc) {
   songDiv.classList.add("song");
   songDiv.setAttribute("data-src", songSrc);
 
+  const scrollingTextContainer = document.createElement('div');
+  scrollingTextContainer.classList.add('scrolling-text-container');
+
   let title = document.createElement("p");
   title.textContent = songTitle;
-  title.classList.add("song-title");
+  title.classList.add("scrolling-text");
+
+  scrollingTextContainer.appendChild(title);
 
   let buttonsContainer = document.createElement("div");
   buttonsContainer.classList.add("buttons-container");
@@ -249,14 +257,10 @@ function addToPlaylist(songTitle, songSrc) {
   buttonsContainer.appendChild(moveDownButton);
   buttonsContainer.appendChild(removeButton);
 
-  songDiv.appendChild(title);
+  songDiv.appendChild(scrollingTextContainer);
   songDiv.appendChild(buttonsContainer);
 
   playlistContent.appendChild(songDiv);
-
-  // Vérifiez si le texte dépasse
-  checkTextOverflow(title);
-
   savePlaylist();
 }
 
