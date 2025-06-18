@@ -1,5 +1,8 @@
 let csvData = [];
 let sortOrder = 'desc';
+let audioElement = document.getElementById("audioElement");
+let currentSongIndex = -1;
+let playlistSongs = [];
 
 async function loadCSVData() {
   try {
@@ -61,7 +64,7 @@ function createSongElement(song, isPlaylist = false) {
 
     const removeButton = document.createElement('button');
     removeButton.textContent = 'Retirer';
-    removeButton.classList.add('rm_song')
+    removeButton.classList.add('rm_song');
     removeButton.onclick = function() { removeFromPlaylist(this); };
 
     buttonsContainer.appendChild(moveUpButton);
@@ -70,15 +73,15 @@ function createSongElement(song, isPlaylist = false) {
   } else {
     const playButton = document.createElement('button');
     playButton.textContent = '➕';
-    playButton.id = 'browser_button'
+    playButton.id = 'browser_button';
     playButton.addEventListener('click', () => {
       addToPlaylist(song.Title, song.Mp3);
-      showCustomAlert(`"${song.Title}" ajoute a la playlist 🎵`);
+      showCustomAlert(`"${song.Title}" ajouté à la playlist 🎵`);
     });
 
     const clipButton = document.createElement('button');
     clipButton.textContent = '🎬';
-    clipButton.id = 'browser_button'
+    clipButton.id = 'browser_button';
     clipButton.addEventListener('click', () => {
       window.open(song.Mp4, '_blank');
     });
@@ -146,8 +149,51 @@ function searchSong(input) {
   displaySongs(filteredSongs);
 }
 
+function setupMediaSession() {
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: "No playing",
+      artist: "Unknown Artist",
+      album: "Unknown Album",
+      artwork: [{ src: "path/to/artwork.jpg", sizes: "512x512", type: "image/jpg" }]
+    });
+
+    navigator.mediaSession.setActionHandler('play', () => {
+      audioElement.play();
+    });
+
+    navigator.mediaSession.setActionHandler('pause', () => {
+      audioElement.pause();
+    });
+
+    navigator.mediaSession.setActionHandler('previoustrack', () => {
+      playSong(currentSongIndex - 1);
+    });
+
+    navigator.mediaSession.setActionHandler('nexttrack', () => {
+      playSong(currentSongIndex + 1);
+    });
+  }
+}
+
+function registerServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        })
+        .catch(err => {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+    });
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   loadCSVData();
+  setupMediaSession();
+  registerServiceWorker();
 
   document.getElementById('searchBar').addEventListener('input', (event) => {
     searchSong(event.target.value);
@@ -306,18 +352,6 @@ function resetPlayer() {
   document.getElementById("progressBar").style.width = "0%";
 }
 
-// Gestion du lecteur audio
-let audioElement = document.getElementById("audioElement");
-let playPauseButton = document.getElementById("playPauseButton");
-let prevButton = document.getElementById("prevButton");
-let nextButton = document.getElementById("nextButton");
-let playerTitle = document.getElementById("playerTitle");
-let currentTimeDisplay = document.getElementById("currentTime");
-let totalTimeDisplay = document.getElementById("totalTime");
-
-let currentSongIndex = -1;
-let playlistSongs = [];
-
 function updatePlaylistSongs() {
   playlistSongs = [...document.querySelectorAll("#playlistContent .song")].map(song => ({
     title: song.querySelector("p").textContent,
@@ -337,32 +371,40 @@ function playSong(index) {
   let song = playlistSongs[currentSongIndex];
 
   audioElement.src = song.src;
-  playerTitle.textContent = song.title;
+  document.getElementById("playerTitle").textContent = song.title;
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: song.title,
+      artist: "Artist",
+      album: "Album",
+      artwork: [{ src: "path/to/artwork.jpg", sizes: "512x512", type: "image/jpg" }]
+    });
+  }
   audioElement.play();
-  playPauseButton.textContent = "❚❚";
+  document.getElementById("playPauseButton").textContent = "❚❚";
 }
 
-playPauseButton.addEventListener("click", function () {
+document.getElementById("playPauseButton").addEventListener("click", function () {
   if (audioElement.paused) {
     if (currentSongIndex === -1) {
       playSong(0);
     } else {
       audioElement.play();
     }
-    playPauseButton.textContent = "❚❚";
+    document.getElementById("playPauseButton").textContent = "❚❚";
   } else {
     audioElement.pause();
-    playPauseButton.textContent = "▶";
+    document.getElementById("playPauseButton").textContent = "▶";
   }
 });
 
-prevButton.addEventListener("click", function () {
+document.getElementById("prevButton").addEventListener("click", function () {
   if (playlistSongs.length > 0) {
     playSong(currentSongIndex - 1);
   }
 });
 
-nextButton.addEventListener("click", function () {
+document.getElementById("nextButton").addEventListener("click", function () {
   if (playlistSongs.length > 0) {
     playSong(currentSongIndex + 1);
   }
@@ -373,19 +415,18 @@ audioElement.addEventListener("ended", function () {
     const finishedTitle = playlistSongs[currentSongIndex].title;
     addPlayCount(finishedTitle);
   }
-
   playSong(currentSongIndex + 1);
 });
 
 audioElement.addEventListener("timeupdate", function () {
   let currentMinutes = Math.floor(audioElement.currentTime / 60);
   let currentSeconds = Math.floor(audioElement.currentTime % 60);
-  currentTimeDisplay.textContent = `${currentMinutes}:${currentSeconds < 10 ? "0" : ""}${currentSeconds}`;
+  document.getElementById("currentTime").textContent = `${currentMinutes}:${currentSeconds < 10 ? "0" : ""}${currentSeconds}`;
 
   let totalMinutes = Math.floor(audioElement.duration / 60);
   let totalSeconds = Math.floor(audioElement.duration % 60);
   if (!isNaN(totalMinutes) && !isNaN(totalSeconds)) {
-    totalTimeDisplay.textContent = `${totalMinutes}:${totalSeconds < 10 ? "0" : ""}${totalSeconds}`;
+    document.getElementById("totalTime").textContent = `${totalMinutes}:${totalSeconds < 10 ? "0" : ""}${totalSeconds}`;
   }
 });
 
@@ -402,83 +443,4 @@ audioElement.addEventListener("timeupdate", function () {
 progressContainer.addEventListener("click", function (e) {
   let clickPosition = (e.offsetX / progressContainer.offsetWidth) * audioElement.duration;
   audioElement.currentTime = clickPosition;
-});
-
-
-/* __________________________________ notif androïd __________________ */
-
-let audioElement = document.getElementById("audioElement");
-let currentSongIndex = -1;
-let playlistSongs = [];
-
-// Exemple de liste de chansons
-const songs = [
-  { title: "Song 1", src: "path/to/song1.mp3" },
-  { title: "Song 2", src: "path/to/song2.mp3" },
-  // Ajoutez d'autres chansons ici
-];
-
-function setupMediaSession() {
-  if ('mediaSession' in navigator) {
-    navigator.mediaSession.metadata = new MediaMetadata({
-      title: "No playing",
-      artist: "Unknown Artist",
-      album: "Unknown Album",
-      artwork: [{ src: "path/to/artwork.jpg", sizes: "512x512", type: "image/jpg" }]
-    });
-
-    navigator.mediaSession.setActionHandler('play', () => {
-      audioElement.play();
-    });
-
-    navigator.mediaSession.setActionHandler('pause', () => {
-      audioElement.pause();
-    });
-
-    navigator.mediaSession.setActionHandler('previoustrack', () => {
-      playSong(currentSongIndex - 1);
-    });
-
-    navigator.mediaSession.setActionHandler('nexttrack', () => {
-      playSong(currentSongIndex + 1);
-    });
-  }
-}
-
-function playSong(index) {
-  if (index < 0) index = songs.length - 1;
-  if (index >= songs.length) index = 0;
-
-  currentSongIndex = index;
-  const song = songs[currentSongIndex];
-
-  audioElement.src = song.src;
-  audioElement.play();
-
-  if ('mediaSession' in navigator) {
-    navigator.mediaSession.metadata = new MediaMetadata({
-      title: song.title,
-      artist: "Artist",
-      album: "Album",
-      artwork: [{ src: "path/to/artwork.jpg", sizes: "512x512", type: "image/jpg" }]
-    });
-  }
-}
-
-function registerServiceWorker() {
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js').then(registration => {
-        console.log('ServiceWorker registration successful');
-      }).catch(err => {
-        console.log('ServiceWorker registration failed: ', err);
-      });
-    });
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  setupMediaSession();
-  registerServiceWorker();
-  playSong(0); // Commencez la lecture de la première chanson
 });
