@@ -5,7 +5,7 @@ self.addEventListener('fetch', (event) => {
 
 self.addEventListener('message', (event) => {
   if (event.data.action === 'skip') {
-    clients.matchAll().then((clients) => {
+    self.clients.matchAll().then((clients) => {
       clients.forEach((client) => {
         client.postMessage({
           action: 'skip',
