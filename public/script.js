@@ -403,3 +403,82 @@ progressContainer.addEventListener("click", function (e) {
   let clickPosition = (e.offsetX / progressContainer.offsetWidth) * audioElement.duration;
   audioElement.currentTime = clickPosition;
 });
+
+
+/* __________________________________ notif androïd __________________ */
+
+let audioElement = document.getElementById("audioElement");
+let currentSongIndex = -1;
+let playlistSongs = [];
+
+// Exemple de liste de chansons
+const songs = [
+  { title: "Song 1", src: "path/to/song1.mp3" },
+  { title: "Song 2", src: "path/to/song2.mp3" },
+  // Ajoutez d'autres chansons ici
+];
+
+function setupMediaSession() {
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: "No playing",
+      artist: "Unknown Artist",
+      album: "Unknown Album",
+      artwork: [{ src: "path/to/artwork.jpg", sizes: "512x512", type: "image/jpg" }]
+    });
+
+    navigator.mediaSession.setActionHandler('play', () => {
+      audioElement.play();
+    });
+
+    navigator.mediaSession.setActionHandler('pause', () => {
+      audioElement.pause();
+    });
+
+    navigator.mediaSession.setActionHandler('previoustrack', () => {
+      playSong(currentSongIndex - 1);
+    });
+
+    navigator.mediaSession.setActionHandler('nexttrack', () => {
+      playSong(currentSongIndex + 1);
+    });
+  }
+}
+
+function playSong(index) {
+  if (index < 0) index = songs.length - 1;
+  if (index >= songs.length) index = 0;
+
+  currentSongIndex = index;
+  const song = songs[currentSongIndex];
+
+  audioElement.src = song.src;
+  audioElement.play();
+
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: song.title,
+      artist: "Artist",
+      album: "Album",
+      artwork: [{ src: "path/to/artwork.jpg", sizes: "512x512", type: "image/jpg" }]
+    });
+  }
+}
+
+function registerServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').then(registration => {
+        console.log('ServiceWorker registration successful');
+      }).catch(err => {
+        console.log('ServiceWorker registration failed: ', err);
+      });
+    });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setupMediaSession();
+  registerServiceWorker();
+  playSong(0); // Commencez la lecture de la première chanson
+});
