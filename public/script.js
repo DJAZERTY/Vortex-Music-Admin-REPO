@@ -11,7 +11,7 @@ async function loadCSVData() {
 
     const data = await response.json();
     csvData = data;
-    console.log('Données stockées:', csvData);
+    console.log('Données stockées:', csvData.length);
 
     sortSongs(); // Initial sorting
   } catch (error) {
