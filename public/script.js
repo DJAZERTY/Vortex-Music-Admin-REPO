@@ -76,7 +76,7 @@ function createSongElement(song, isPlaylist = false) {
     playButton.id = 'browser_button';
     playButton.addEventListener('click', () => {
       addToPlaylist(song.Title, song.Mp3);
-      showCustomAlert(`"${song.Title}" ajouté à la playlist 🎵`);
+      showCustomAlert(`"${song.Title}" ajoute a la playlist 🎵`);
     });
 
     const clipButton = document.createElement('button');
