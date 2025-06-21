@@ -6,7 +6,7 @@ let playlistSongs = [];
 
 async function loadCSVData() {
   try {
-    const response = await fetch('');
+    const response = await fetch('/data');
     if (!response.ok) throw new Error('Erreur HTTP : ' + response.status);
     const data = await response.json();
     csvData = data;

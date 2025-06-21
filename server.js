@@ -5,7 +5,7 @@ const csv = require('csv-parser');
 const { parse } = require('json2csv');
 
 const app = express();
-const CSV_PATH = 'db.csv';
+const CSV_PATH = 'data/db.csv';
 
 app.use(cors());
 app.use(express.static('public'));
