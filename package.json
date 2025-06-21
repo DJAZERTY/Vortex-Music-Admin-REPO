@@ -6,6 +6,10 @@
   "scripts": {
     "start": "node server.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://23807b77-463a-480a-8175-60e244378832@api.glitch.com/git/dj-azerty-blog-admin"
+  },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.18.2",
