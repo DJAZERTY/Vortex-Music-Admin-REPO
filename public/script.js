@@ -154,7 +154,6 @@ function setupMediaSession() {
       artist: "DJ AZERTY",
       artwork: [{
         src: "https://cdn.glitch.global/cefd793b-5fb5-4078-b9e3-0461a20468dd/logo.png?v=1747786654808",
-        sizes: "512x512",
         type: "image/jpeg"
       }]
     });
