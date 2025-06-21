@@ -32,7 +32,7 @@ function createSongElement(song, isPlaylist = false) {
 
   if (!isPlaylist) {
     const img = document.createElement('img');
-    img.src = song.Png || 'https://cdn.glitch.global/05de98a1-79c1-4327-a9f1-7d0c6536ee65/logo.png?v=1747693747727';
+    img.src = song.Png || 'https;
     img.alt = song.Title || 'Artwork';
     img.classList.add('song-image');
     songDiv.appendChild(img);
