@@ -374,7 +374,7 @@ function playSong(index) {
   document.getElementById("playerTitle").textContent = song.title;
 
   if ('mediaSession' in navigator) {
-    const artworkSrc = song.Png || "https://cdn.glitch.global/3bde9cea-b5de-471e-a72e-a49cd769310e/yt_pp.png?v=1750470811829";
+    const artworkSrc = song.Png || "https://cdn.glitch.global/3bde9cea-b5de-471e-a72e-a49cd769310e/yt_pp.png?v=1750472915548";
 
     navigator.mediaSession.metadata = new MediaMetadata({
       title: song.title,
