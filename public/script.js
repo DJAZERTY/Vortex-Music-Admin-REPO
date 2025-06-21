@@ -8,12 +8,10 @@ async function loadCSVData() {
   try {
     const response = await fetch('/data');
     if (!response.ok) throw new Error('Erreur HTTP : ' + response.status);
-
     const data = await response.json();
     csvData = data;
     console.log('Données stockées:', csvData.length);
-
-    sortSongs(); // Initial sorting
+    sortSongs();
   } catch (error) {
     console.error('Erreur:', error);
   }
@@ -32,8 +30,8 @@ function createSongElement(song, isPlaylist = false) {
 
   if (!isPlaylist) {
     const img = document.createElement('img');
-    img.src = song.Png;
-    img.alt = song.Title;
+    img.src = song.Png || 'https://cdn.glitch.global/cefd793b-5fb5-4078-b9e3-0461a20468dd/logo.png?v=1747786654808';
+    img.alt = song.Title || 'Artwork';
     img.classList.add('song-image');
     songDiv.appendChild(img);
   }
@@ -76,7 +74,7 @@ function createSongElement(song, isPlaylist = false) {
     playButton.id = 'browser_button';
     playButton.addEventListener('click', () => {
       addToPlaylist(song.Title, song.Mp3);
-      showCustomAlert(`"${song.Title}" ajoute a la playlist 🎵`);
+      showCustomAlert(`"${song.Title}" ajouté à la playlist 🎵`);
     });
 
     const clipButton = document.createElement('button');
@@ -154,7 +152,11 @@ function setupMediaSession() {
     navigator.mediaSession.metadata = new MediaMetadata({
       title: "No playing",
       artist: "DJ AZERTY",
-      artwork: [{ src: "https://cdn.glitch.global/cefd793b-5fb5-4078-b9e3-0461a20468dd/logo.png?v=1747786654808", sizes: "512x512", type: "image/jpg" }]
+      artwork: [{
+        src: "https://cdn.glitch.global/cefd793b-5fb5-4078-b9e3-0461a20468dd/logo.png?v=1747786654808",
+        sizes: "512x512",
+        type: "image/jpeg"
+      }]
     });
 
     navigator.mediaSession.setActionHandler('play', () => {
@@ -373,15 +375,15 @@ function playSong(index) {
   document.getElementById("playerTitle").textContent = song.title;
 
   if ('mediaSession' in navigator) {
-    const artworkSrc = song.Png;
-    console.log(song.Png)
+    const artworkSrc = song.Png || "https://cdn.glitch.global/cefd793b-5fb5-4078-b9e3-0461a20468dd/logo.png?v=1747786654808";
+
     navigator.mediaSession.metadata = new MediaMetadata({
-      title: song.Title,
+      title: song.title,
       artist: "DJ AZERTY",
       artwork: [{
         src: artworkSrc,
         sizes: "512x512",
-        type: "image/jpg"
+        type: "image/jpeg"
       }]
     });
   }
@@ -389,7 +391,6 @@ function playSong(index) {
   audioElement.play();
   document.getElementById("playPauseButton").textContent = "❚❚";
 }
-
 
 document.getElementById("playPauseButton").addEventListener("click", function () {
   if (audioElement.paused) {
@@ -422,6 +423,7 @@ audioElement.addEventListener("ended", function () {
     const finishedTitle = playlistSongs[currentSongIndex].title;
     addPlayCount(finishedTitle);
   }
+
   playSong(currentSongIndex + 1);
 });
 

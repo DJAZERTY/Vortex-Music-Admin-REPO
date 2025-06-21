@@ -1,6 +1,13 @@
-// Service Worker
+self.addEventListener('install', (event) => {
+  console.log('Service Worker installing.');
+});
+
+self.addEventListener('activate', (event) => {
+  console.log('Service Worker activated.');
+});
+
 self.addEventListener('fetch', (event) => {
-  // Vous pouvez ajouter ici des logiques pour gérer les requêtes fetch
+  console.log('Fetching:', event.request.url);
 });
 
 self.addEventListener('message', (event) => {
