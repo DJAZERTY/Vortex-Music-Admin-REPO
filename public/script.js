@@ -30,7 +30,7 @@ function createSongElement(song, isPlaylist = false) {
 
   if (!isPlaylist) {
     const img = document.createElement('img');
-    img.src = song.Png || 'https://cdn.glitch.global/cefd793b-5fb5-4078-b9e3-0461a20468dd/logo.png?v=1747786654808';
+    img.src = song.Png || 'https://cdn.glitch.global/3bde9cea-b5de-471e-a72e-a49cd769310e/yt_pp.png?v=1750470811829';
     img.alt = song.Title || 'Artwork';
     img.classList.add('song-image');
     songDiv.appendChild(img);
@@ -153,7 +153,7 @@ function setupMediaSession() {
       title: "No playing",
       artist: "DJ AZERTY",
       artwork: [{
-        src: "https://cdn.glitch.global/cefd793b-5fb5-4078-b9e3-0461a20468dd/pp_carre.jpg?v=1749564613320",
+        src: "https://cdn.glitch.global/3bde9cea-b5de-471e-a72e-a49cd769310e/yt_pp.png?v=1750470811829",
         type: "image/jpeg"
       }]
     });
