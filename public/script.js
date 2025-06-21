@@ -153,8 +153,7 @@ function setupMediaSession() {
   if ('mediaSession' in navigator) {
     navigator.mediaSession.metadata = new MediaMetadata({
       title: "No playing",
-      artist: "Unknown Artist",
-      album: "Unknown Album",
+      artist: "DJ AZERTY",
       artwork: [{ src: "https://cdn.glitch.global/cefd793b-5fb5-4078-b9e3-0461a20468dd/logo.png?v=1747786654808", sizes: "512x512", type: "image/jpg" }]
     });
 
@@ -374,12 +373,11 @@ function playSong(index) {
   document.getElementById("playerTitle").textContent = song.title;
 
   if ('mediaSession' in navigator) {
-    const artworkSrc = song.Png || "https://cdn.glitch.global/cefd793b-5fb5-4078-b9e3-0461a20468dd/logo.png?v=1747786654808";
-
+    const artworkSrc = song.Png;
+    console.log(song.Png)
     navigator.mediaSession.metadata = new MediaMetadata({
-      title: song.title,
-      artist: "Artist",
-      album: "Album",
+      title: song.Title,
+      artist: "DJ AZERTY",
       artwork: [{
         src: artworkSrc,
         sizes: "512x512",
