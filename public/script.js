@@ -32,8 +32,8 @@ function createSongElement(song, isPlaylist = false) {
 
   if (!isPlaylist) {
     const img = document.createElement('img');
-    img.src = song.Png || 'https;
-    img.alt = song.Title || 'Artwork';
+    img.src = song.Png;
+    img.alt = song.Title;
     img.classList.add('song-image');
     songDiv.appendChild(img);
   }
@@ -155,7 +155,7 @@ function setupMediaSession() {
       title: "No playing",
       artist: "Unknown Artist",
       album: "Unknown Album",
-      artwork: [{ src: "path/to/artwork.jpg", sizes: "512x512", type: "image/jpg" }]
+      artwork: [{ src: "https://cdn.glitch.global/cefd793b-5fb5-4078-b9e3-0461a20468dd/logo.png?v=1747786654808", sizes: "512x512", type: "image/jpg" }]
     });
 
     navigator.mediaSession.setActionHandler('play', () => {
@@ -372,17 +372,26 @@ function playSong(index) {
 
   audioElement.src = song.src;
   document.getElementById("playerTitle").textContent = song.title;
+
   if ('mediaSession' in navigator) {
+    const artworkSrc = song.Png || "https://cdn.glitch.global/cefd793b-5fb5-4078-b9e3-0461a20468dd/logo.png?v=1747786654808";
+
     navigator.mediaSession.metadata = new MediaMetadata({
       title: song.title,
       artist: "Artist",
       album: "Album",
-      artwork: [{ src: "path/to/artwork.jpg", sizes: "512x512", type: "image/jpg" }]
+      artwork: [{
+        src: artworkSrc,
+        sizes: "512x512",
+        type: "image/jpg"
+      }]
     });
   }
+
   audioElement.play();
   document.getElementById("playPauseButton").textContent = "❚❚";
 }
+
 
 document.getElementById("playPauseButton").addEventListener("click", function () {
   if (audioElement.paused) {
