@@ -151,9 +151,9 @@ function setupMediaSession() {
   if ('mediaSession' in navigator) {
     navigator.mediaSession.metadata = new MediaMetadata({
       title: "No playing",
-      artist: "DJ AZERTY",
+      artist: "Vortex - Music",
       artwork: [{
-        src: "https://cdn.glitch.global/3bde9cea-b5de-471e-a72e-a49cd769310e/yt_pp.png?v=1750470811829",
+        src: "https://cdn.glitch.global/3bde9cea-b5de-471e-a72e-a49cd769310e/logo.png?v=1751227057968",
         type: "image/jpeg"
       }]
     });
@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function addPlayCount(title) {
-  fetch('https://dj-azerty-blog-admin.glitch.me/increment', {
+  fetch('https://dj-azerty-blog.glitch.me/increment', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ title })
@@ -374,11 +374,11 @@ function playSong(index) {
   document.getElementById("playerTitle").textContent = song.title;
 
   if ('mediaSession' in navigator) {
-    const artworkSrc = song.Png || "https://cdn.glitch.global/3bde9cea-b5de-471e-a72e-a49cd769310e/yt_pp.png?v=1750472915548";
+    const artworkSrc = song.Png || "https://cdn.glitch.global/3bde9cea-b5de-471e-a72e-a49cd769310e/logo.png?v=1751227057968";
 
     navigator.mediaSession.metadata = new MediaMetadata({
       title: song.title,
-      artist: "DJ AZERTY",
+      artist: "Vortex - Music",
       artwork: [{
         src: artworkSrc,
         sizes: "512x512",
