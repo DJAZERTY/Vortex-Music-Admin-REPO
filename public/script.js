@@ -30,7 +30,7 @@ function createSongElement(song, isPlaylist = false) {
 
   if (!isPlaylist) {
     const img = document.createElement('img');
-    img.src = song.Png || 'https://cdn.glitch.global/3bde9cea-b5de-471e-a72e-a49cd769310e/yt_pp.png?v=1750470811829';
+    img.src = song.Png || 'https://dn721801.ca.archive.org/0/items/pp-circle-alpha/PP_Carre.png';
     img.alt = song.Title || 'Artwork';
     img.classList.add('song-image');
     songDiv.appendChild(img);
@@ -153,7 +153,7 @@ function setupMediaSession() {
       title: "No playing",
       artist: "Vortex - Music",
       artwork: [{
-        src: "https://cdn.glitch.global/3bde9cea-b5de-471e-a72e-a49cd769310e/logo.png?v=1751227057968",
+        src: "https://dn721801.ca.archive.org/0/items/pp-circle-alpha/PP_Carre.png",
         type: "image/jpeg"
       }]
     });
@@ -374,7 +374,7 @@ function playSong(index) {
   document.getElementById("playerTitle").textContent = song.title;
 
   if ('mediaSession' in navigator) {
-    const artworkSrc = song.Png || "https://cdn.glitch.global/3bde9cea-b5de-471e-a72e-a49cd769310e/logo.png?v=1751227057968";
+    const artworkSrc = song.Png || "https://dn721801.ca.archive.org/0/items/pp-circle-alpha/PP_Carre.png";
 
     navigator.mediaSession.metadata = new MediaMetadata({
       title: song.title,
