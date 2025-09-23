@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'Neon';
-  src: url('font/VortexFont.woff2') format('woff2'),
+  src: url("/assets/fonts/VortexFont.woff2") format("woff2");
   font-weight: normal;
   font-style: normal;
 }
