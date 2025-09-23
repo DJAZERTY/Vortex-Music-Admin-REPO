@@ -3,39 +3,50 @@ const cors = require('cors');
 const fs = require('fs');
 const csv = require('csv-parser');
 const { parse } = require('json2csv');
+const path = require('path'); // 👈 add
 
 const app = express();
 const CSV_PATH = 'data/db.csv';
 
-app.use(cors());
-app.use(express.static('public'));
+app.use(cors()); // CORS global (répond aussi aux preflight)
 app.use(express.json());
 
-// GET /data : retourne tout le CSV en JSON, PlayCount en entier, le reste en string
+// ⚠️ Servez vos fichiers statiques "public" comme avant (CSS/JS/images)
+app.use(express.static(path.join(__dirname, 'public')));
+
+// ✅ Servez les polices (et autres assets) avec headers précis
+app.use('/assets', express.static(path.join(__dirname, 'assets'), {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.woff2')) {
+      res.setHeader('Content-Type', 'font/woff2');
+    } else if (filePath.endsWith('.woff')) {
+      res.setHeader('Content-Type', 'font/woff');
+    }
+    // CORS + cache long (idéal pour les fonts fingerprintées)
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    res.setHeader('Vary', 'Origin');
+  }
+}));
+
+// --- tes routes API inchangées ---
 app.get('/data', (req, res) => {
   const results = [];
   fs.createReadStream(CSV_PATH)
     .pipe(csv())
     .on('data', (data) => {
-      // Convertir uniquement PlayCount en entier
       data.PlayCount = parseInt(data.PlayCount || '0', 10);
-      // ReleaseDate et autres restent en string
       results.push(data);
     })
     .on('end', () => res.json(results))
     .on('error', () => res.status(500).json({ error: 'Erreur lecture CSV.' }));
 });
 
-// POST /increment : incrémente PlayCount d'une chanson donnée
 app.post('/increment', (req, res) => {
   const { title } = req.body;
-
-  if (!title) {
-    return res.status(400).json({ error: 'Titre manquant.' });
-  }
+  if (!title) return res.status(400).json({ error: 'Titre manquant.' });
 
   const data = [];
-
   fs.createReadStream(CSV_PATH)
     .pipe(csv())
     .on('data', (row) => {
@@ -44,33 +55,23 @@ app.post('/increment', (req, res) => {
     })
     .on('end', () => {
       let found = false;
-
       const updatedData = data.map(row => {
         if (row.Title === title) {
           found = true;
           row.PlayCount += 1;
         }
-        return {
-          ...row,
-          PlayCount: row.PlayCount.toString(), // converti en string pour CSV
-          // ReleaseDate et autres champs restent intacts
-        };
+        return { ...row, PlayCount: row.PlayCount.toString() };
       });
 
-      if (!found) {
-        return res.status(404).json({ error: 'Chanson non trouvée.' });
-      }
+      if (!found) return res.status(404).json({ error: 'Chanson non trouvée.' });
 
       try {
         const updatedCsv = parse(updatedData, { fields: Object.keys(updatedData[0]) });
-
         fs.writeFile(CSV_PATH, updatedCsv, (err) => {
-          if (err) {
-            return res.status(500).json({ error: 'Erreur écriture CSV.' });
-          }
+          if (err) return res.status(500).json({ error: 'Erreur écriture CSV.' });
           return res.json({ message: `PlayCount incrémenté pour "${title}".` });
         });
-      } catch (err) {
+      } catch {
         return res.status(500).json({ error: 'Erreur conversion CSV.' });
       }
     })
