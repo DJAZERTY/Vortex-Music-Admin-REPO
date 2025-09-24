@@ -1,8 +1,73 @@
+/* =========================
+   Vortex Music - Front App
+   ========================= */
+
 let csvData = [];
 let sortOrder = 'desc';
 let audioElement = document.getElementById("audioElement");
 let currentSongIndex = -1;
 let playlistSongs = [];
+
+/* -------- Helpers PWA / SW (overlay audio + install) -------- */
+
+// Affiche un overlay visuel + action de skip locale
+function showAudioOverlay(direction = 'forward') {
+  const el = document.getElementById('audioOverlay');
+  if (!el) return;
+
+  el.textContent = direction === 'back' ? '⏮️ Previous' : '⏭️ Next';
+  el.style.display = 'flex';
+  clearTimeout(showAudioOverlay._t);
+  showAudioOverlay._t = setTimeout(() => { el.style.display = 'none'; }, 1200);
+
+  // Déclenche aussi le skip local
+  if (direction === 'back') {
+    playSong(currentSongIndex - 1);
+  } else {
+    playSong(currentSongIndex + 1);
+  }
+}
+
+// Écoute les messages du Service Worker (broadcast inter-onglets)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    const data = event.data || {};
+    if (data.action === 'skip') {
+      showAudioOverlay(data.direction);
+    }
+  });
+}
+
+// Envoie un message au SW pour broadcast "skip" vers tous les onglets
+function broadcastSkip(direction = 'forward') {
+  const send = () =>
+    navigator.serviceWorker.controller?.postMessage({ action: 'skip', direction });
+
+  if (navigator.serviceWorker.controller) {
+    send();
+  } else {
+    navigator.serviceWorker.ready.then(send);
+  }
+}
+
+// Gestion bouton "Installer l’application"
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const btn = document.getElementById('installBtn');
+  if (btn) btn.style.display = 'inline-block';
+});
+
+document.getElementById('installBtn')?.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('installBtn').style.display = 'none';
+});
+
+/* ----------------- Données & affichage ----------------- */
 
 async function loadCSVData() {
   try {
@@ -123,8 +188,8 @@ function sortSongs() {
     } else if (sortBy === 'PlayCount') {
       comparison = a.PlayCount - b.PlayCount;
     } else if (sortBy === 'Time') {
-      const timeA = a.Time.split(':').reduce((acc, time) => acc * 60 + parseInt(time, 10), 0);
-      const timeB = b.Time.split(':').reduce((acc, time) => acc * 60 + parseInt(time, 10), 0);
+      const timeA = a.Time.split(':').reduce((acc, t) => acc * 60 + parseInt(t, 10), 0);
+      const timeB = b.Time.split(':').reduce((acc, t) => acc * 60 + parseInt(t, 10), 0);
       comparison = timeA - timeB;
     }
     return sortOrder === 'asc' ? comparison : -comparison;
@@ -138,14 +203,14 @@ function searchSong(input) {
     sortSongs();
     return;
   }
-
   const filteredSongs = csvData.filter(song => {
     const title = (song.Title || '').toLowerCase();
     return title.includes(searchTerm);
   });
-
   displaySongs(filteredSongs);
 }
+
+/* ----------------- MediaSession ----------------- */
 
 function setupMediaSession() {
   if ('mediaSession' in navigator) {
@@ -158,23 +223,14 @@ function setupMediaSession() {
       }]
     });
 
-    navigator.mediaSession.setActionHandler('play', () => {
-      audioElement.play();
-    });
-
-    navigator.mediaSession.setActionHandler('pause', () => {
-      audioElement.pause();
-    });
-
-    navigator.mediaSession.setActionHandler('previoustrack', () => {
-      playSong(currentSongIndex - 1);
-    });
-
-    navigator.mediaSession.setActionHandler('nexttrack', () => {
-      playSong(currentSongIndex + 1);
-    });
+    navigator.mediaSession.setActionHandler('play', () => audioElement.play());
+    navigator.mediaSession.setActionHandler('pause', () => audioElement.pause());
+    navigator.mediaSession.setActionHandler('previoustrack', () => playSong(currentSongIndex - 1));
+    navigator.mediaSession.setActionHandler('nexttrack', () => playSong(currentSongIndex + 1));
   }
 }
+
+/* ----------------- Service Worker ----------------- */
 
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
@@ -190,53 +246,11 @@ function registerServiceWorker() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  loadCSVData();
-  setupMediaSession();
-  registerServiceWorker();
-
-  document.getElementById('searchBar').addEventListener('input', (event) => {
-    searchSong(event.target.value);
-  });
-
-  document.getElementById('sortSelect').addEventListener('change', sortSongs);
-
-  document.getElementById('sortOrderToggle').addEventListener('click', function() {
-    sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-    document.getElementById('sortOrderToggle').textContent = sortOrder === 'asc' ? '⬇️' : '⬆️';
-    sortSongs();
-  });
-});
-
-function addPlayCount(title) {
-  fetch('https://vortex-music-admin-2203.onrender.com/increment', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title })
-  })
-  .then(async (res) => {
-    const contentType = res.headers.get('content-type');
-    if (!res.ok) {
-      const errMsg = await res.text();
-      throw new Error(`Erreur serveur: ${errMsg}`);
-    }
-    if (!contentType || !contentType.includes('application/json')) {
-      throw new Error('Réponse non-JSON reçue.');
-    }
-    return res.json();
-  })
-  .then((data) => {
-    console.log(data.message || data.error);
-  })
-  .catch((error) => {
-    console.error("Erreur PlayCount :", error.message || error);
-  });
-}
+/* ----------------- Navigation / UI ----------------- */
 
 function switchView(view) {
   closeBrowser();
   closePlaylist();
-
   if (view === "search") {
     openBrowser();
   } else if (view === "playlist") {
@@ -268,14 +282,11 @@ function closePlaylist() {
   document.body.classList.remove("noscroll");
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  loadPlaylist();
-});
+/* ----------------- Playlist (CRUD) ----------------- */
 
 function moveUp(button) {
   const songDiv = button.closest('.song');
   const previousSongDiv = songDiv.previousElementSibling;
-
   if (previousSongDiv) {
     songDiv.parentNode.insertBefore(songDiv, previousSongDiv);
     savePlaylist();
@@ -285,7 +296,6 @@ function moveUp(button) {
 function moveDown(button) {
   const songDiv = button.closest('.song');
   const nextSongDiv = songDiv.nextElementSibling;
-
   if (nextSongDiv) {
     songDiv.parentNode.insertBefore(nextSongDiv, songDiv);
     savePlaylist();
@@ -297,7 +307,6 @@ function addToPlaylist(songTitle, songSrc) {
   if ([...playlistContent.children].some(song => song.getAttribute("data-src") === songSrc)) {
     return;
   }
-
   const song = { Title: songTitle, Mp3: songSrc };
   const songElement = createSongElement(song, true);
   playlistContent.appendChild(songElement);
@@ -316,7 +325,6 @@ function savePlaylist() {
     title: song.querySelector("p").textContent,
     src: song.getAttribute("data-src")
   }));
-
   localStorage.setItem("playlist", JSON.stringify(songs));
   checkAndResetPlayer();
 }
@@ -359,9 +367,10 @@ function updatePlaylistSongs() {
   }));
 }
 
+/* ----------------- Player ----------------- */
+
 function playSong(index) {
   updatePlaylistSongs();
-
   if (playlistSongs.length === 0) return;
 
   if (index < 0) index = playlistSongs.length - 1;
@@ -375,15 +384,10 @@ function playSong(index) {
 
   if ('mediaSession' in navigator) {
     const artworkSrc = song.Png || "https://dn721801.ca.archive.org/0/items/pp-circle-alpha/PP_Carre.png";
-
     navigator.mediaSession.metadata = new MediaMetadata({
       title: song.title,
       artist: "Vortex - Music",
-      artwork: [{
-        src: artworkSrc,
-        sizes: "512x512",
-        type: "image/jpeg"
-      }]
+      artwork: [{ src: artworkSrc, sizes: "512x512", type: "image/jpeg" }]
     });
   }
 
@@ -391,6 +395,7 @@ function playSong(index) {
   document.getElementById("playPauseButton").textContent = "❚❚";
 }
 
+/* Boutons du player — synchronisés via SW pour multi-onglets */
 document.getElementById("playPauseButton").addEventListener("click", function () {
   if (audioElement.paused) {
     if (currentSongIndex === -1) {
@@ -406,23 +411,20 @@ document.getElementById("playPauseButton").addEventListener("click", function ()
 });
 
 document.getElementById("prevButton").addEventListener("click", function () {
-  if (playlistSongs.length > 0) {
-    playSong(currentSongIndex - 1);
-  }
+  // broadcast pour que tous les onglets suivent
+  broadcastSkip('back');
 });
 
 document.getElementById("nextButton").addEventListener("click", function () {
-  if (playlistSongs.length > 0) {
-    playSong(currentSongIndex + 1);
-  }
+  broadcastSkip('forward');
 });
 
+/* Avancement & fin de piste */
 audioElement.addEventListener("ended", function () {
   if (currentSongIndex !== -1 && playlistSongs[currentSongIndex]) {
     const finishedTitle = playlistSongs[currentSongIndex].title;
     addPlayCount(finishedTitle);
   }
-
   playSong(currentSongIndex + 1);
 });
 
@@ -451,4 +453,65 @@ audioElement.addEventListener("timeupdate", function () {
 progressContainer.addEventListener("click", function (e) {
   let clickPosition = (e.offsetX / progressContainer.offsetWidth) * audioElement.duration;
   audioElement.currentTime = clickPosition;
+});
+
+/* ----------------- Stats / API ----------------- */
+
+function addPlayCount(title) {
+  fetch('https://vortex-music-admin-2203.onrender.com/increment', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title })
+  })
+  .then(async (res) => {
+    const contentType = res.headers.get('content-type');
+    if (!res.ok) {
+      const errMsg = await res.text();
+      throw new Error(`Erreur serveur: ${errMsg}`);
+    }
+    if (!contentType || !contentType.includes('application/json')) {
+      throw new Error('Réponse non-JSON reçue.');
+    }
+    return res.json();
+  })
+  .then((data) => {
+    console.log(data.message || data.error);
+  })
+  .catch((error) => {
+    console.error("Erreur PlayCount :", error.message || error);
+  });
+}
+
+/* ----------------- Drag & drop (no-op safe) ----------------- */
+
+function allowDrop(e) { e.preventDefault(); }
+function drop(e) { e.preventDefault(); }
+
+/* ----------------- Recherche / Tri ----------------- */
+
+document.getElementById('searchBar').addEventListener('input', (event) => {
+  searchSong(event.target.value);
+});
+
+document.getElementById('sortSelect').addEventListener('change', sortSongs);
+
+document.getElementById('sortOrderToggle').addEventListener('click', function() {
+  sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+  document.getElementById('sortOrderToggle').textContent = sortOrder === 'asc' ? '⬇️' : '⬆️';
+  sortSongs();
+});
+
+/* ----------------- Init ----------------- */
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadCSVData();
+  loadPlaylist();
+  setupMediaSession();
+  registerServiceWorker();
+});
+
+/* ----------------- Raccourcis clavier (optionnel) ----------------- */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') broadcastSkip('forward');
+  if (e.key === 'ArrowLeft')  broadcastSkip('back');
 });
