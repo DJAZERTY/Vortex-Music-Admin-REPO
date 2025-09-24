@@ -11,23 +11,37 @@
   "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#111827",
+
   "icons": [
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ],
+
   "shortcuts": [
     {
       "name": "Ouvrir la playlist",
       "short_name": "Playlist",
       "url": "/?open=playlist",
-      "description": "Accès rapide à la playlist"
+      "description": "Accès rapide à la playlist",
+      "icons": [
+        { "src": "/icons/shortcut-playlist-96.png", "sizes": "96x96", "type": "image/png", "purpose": "any" }
+      ]
     },
     {
       "name": "Rechercher un titre",
       "short_name": "Recherche",
       "url": "/?open=search",
-      "description": "Accès rapide au navigateur de titres"
+      "description": "Accès rapide au navigateur de titres",
+      "icons": [
+        { "src": "/icons/shortcut-search-96.png", "sizes": "96x96", "type": "image/png", "purpose": "any" }
+      ]
     }
-  ],
-  "prefer_related_applications": false
+  ]
+
+  /* Optionnel : pour l’UI d’installation enrichie
+  ,"screenshots": [
+    { "src": "/screenshots/wide-1200x630.png", "sizes": "1200x630", "type": "image/png", "form_factor": "wide" },
+    { "src": "/screenshots/mobile-540x720.png", "sizes": "540x720", "type": "image/png" }
+  ]
+  */
 }
