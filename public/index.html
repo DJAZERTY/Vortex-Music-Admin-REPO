@@ -5,17 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="https://archive.org/download/pp-circle-alpha/PP_Circle_Alpha.png" />
     <title>Vortex - Music</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#111827">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+
     <link rel="stylesheet" href="default.css" />
     <script src="script.js" defer></script>
   </head>
-    <body>
-      <div class="header" onclick="headerClick(event)">
-        <button class="button" id="open_search" onclick="switchView('search')">🔍</button>
-        <p>Vortex Music Admin</p>
-        <button class="button" id="open_playlist" onclick="switchView('playlist')">🎵</button>
-      </div>      
-      
-      <!-- Browser Container -->
+
+  <body>
+    <div class="header" onclick="headerClick(event)">
+      <button class="button" id="open_search" onclick="switchView('search')">🔍</button>
+      <p>Vortex Music Admin</p>
+      <button class="button" id="open_playlist" onclick="switchView('playlist')">🎵</button>
+    </div>
+
+    <!-- Browser Container -->
     <div id="browser" style="display:none;">
       <div id="search-container">
         <select id="sortSelect" class="sort-select">
@@ -30,45 +37,57 @@
       <div class="song-list" id="songList"></div>
     </div>
 
-
-        <!--playlist -->
-  <div class="playlist-container" id="playlistContainer">
-        <div class="playlist-content" id="playlistContent" ondrop="drop(event)" ondragover="allowDrop(event)">
+    <!-- Playlist -->
+    <div class="playlist-container" id="playlistContainer">
+      <div class="playlist-content" id="playlistContent" ondrop="drop(event)" ondragover="allowDrop(event)">
         <!-- Chansons ajoutées à la playlist seront affichées ici -->
-        </div>
-        <!-- Lecteur audio en bas de la playlist -->
-        <div id="audioPlayer">
-          <div id="playerTitle">No playing</div>
-          <div id="playerTime">
-            <span id="currentTime">0:00</span> / <span id="totalTime">0:00</span>
-          </div>
-          <div id="playerControls">
-            <button id="prevButton">⏮</button>
-            <button id="playPauseButton">▶</button>
-            <button id="nextButton">⏭</button>
-          </div>
-          <div id="progressContainer">
-            <div id="progressBar"></div>
-          </div>
-  
-        </div>
-        <audio id="audioElement"></audio>
       </div>
-      
-      <div class="home">
-        <div class="stack-box">
-          <img src="https://ia902902.us.archive.org/26/items/pp-circle-alpha/PP_Carre.png"/>
+
+      <!-- Lecteur audio -->
+      <div id="audioPlayer">
+        <div id="playerTitle">No playing</div>
+        <div id="playerTime">
+          <span id="currentTime">0:00</span> / <span id="totalTime">0:00</span>
         </div>
-        <div class="stack-box" id="last-stack-box">
-          <p>!! Bravo !!</p>
-          <p>!! tu m'as trouvé !!</p>
-      </div>
-        
-      <div id="customAlert" class="custom-alert">
-        <div class="custom-alert-content">
-          <p id="customAlertMessage"></p>
-          <button onclick="document.getElementById('customAlert').style.display = 'none'">OK</button>
+        <div id="playerControls">
+          <button id="prevButton">⏮</button>
+          <button id="playPauseButton">▶</button>
+          <button id="nextButton">⏭</button>
+        </div>
+        <div id="progressContainer">
+          <div id="progressBar"></div>
         </div>
       </div>
-    </body>
-  </html>
+      <audio id="audioElement"></audio>
+    </div>
+
+    <div class="home">
+      <div class="stack-box">
+        <img src="https://ia902902.us.archive.org/26/items/pp-circle-alpha/PP_Carre.png" alt="logo"/>
+      </div>
+      <div class="stack-box" id="last-stack-box">
+        <p>!! Bravo !!</p>
+        <p>!! tu m'as trouvé !!</p>
+      </div>
+    </div>
+
+    <div id="customAlert" class="custom-alert">
+      <div class="custom-alert-content">
+        <p id="customAlertMessage"></p>
+        <button onclick="document.getElementById('customAlert').style.display = 'none'">OK</button>
+      </div>
+    </div>
+
+    <!-- Overlay audio (piloté par le SW) -->
+    <div id="audioOverlay"
+         style="display:none; position:fixed; inset:0; backdrop-filter:blur(2px);
+                background:rgba(0,0,0,.35); color:#fff; font-size:2rem;
+                align-items:center; justify-content:center; z-index:9999;">
+    </div>
+
+    <!-- (Optionnel) Bouton pour installer la PWA -->
+    <button id="installBtn" style="display:none; position:fixed; right:1rem; bottom:1rem; z-index:10000;">
+      Installer l’application
+    </button>
+  </body>
+</html>
